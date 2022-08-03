@@ -16,10 +16,10 @@ export default function Chat() {
         </div>
         <div className="chatHeaderRight">
           <button style={{ border: "none" }}>
-            <span class="material-symbols-outlined">search</span>
+            <span className="material-symbols-outlined">search</span>
           </button>
           <button style={{ border: "none" }}>
-            <span class="material-symbols-outlined">attach_file</span>
+            <span className="material-symbols-outlined">attach_file</span>
           </button>
           <button style={{ border: "none" }}>
             <span className="material-symbols-outlined">more_vert</span>
@@ -46,14 +46,14 @@ export default function Chat() {
       </div>
       {/* -------------------------chat footer------------------------- */}
       <div className="chatFooter">
-        <span class="material-symbols-outlined">mood</span>
+        <span className="material-symbols-outlined">mood</span>
         <form>
           <input type="text" placeholder="Type a message" />
           <button type="submit" style={{ border: "none" }}>
-            <span class="material-symbols-outlined">send</span>
+            <span className="material-symbols-outlined">send</span>
           </button>
           <button style={{ border: "none" }}>
-            <span class="material-symbols-outlined">mic</span>
+            <span className="material-symbols-outlined">mic</span>
           </button>
         </form>
       </div>
