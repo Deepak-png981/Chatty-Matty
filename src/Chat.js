@@ -1,7 +1,52 @@
-import React from "react";
+import React , { useEffect , useState } from "react";
 import "./Chat.css";
-
+// jo id aa rhi hai ushko catch krke ushki chats ko show krne ke liye hum ye use krte hai
+import {useParams} from "react-router-dom";
+import { addDoc, collection, doc, onSnapshot, orderBy, query, serverTimestamp ,Timestamp   } from "firebase/firestore";
+import {db} from "./firebase";
+import { async } from "@firebase/util";
 export default function Chat() {
+  // catch ker rhe hai ID ko jo uper URL mein pass ho rhi hai
+  const {groupId} = useParams(); 
+  const [groupName, setGroupName] = useState();
+  const [input , setInput] = useState("");
+  const [messages, setMessages] = useState([]);  
+  useEffect(()=>{
+    if(groupId){
+      const getGroup = onSnapshot(doc(db , "groups" , groupId), (doc)=>{
+        setGroupName(doc.data().name);
+      });
+      const q = query(collection(db , "groups" , groupId , "messages"), orderBy("timeStamp", "asc"));
+      const getMessages = onSnapshot(q , (snapshoot)=>{
+        const msgList = [];
+        snapshoot.docs.forEach((doc)=>{
+          msgList.push({...doc.data()});
+        })
+        setMessages(msgList);
+      });
+    }
+  } , [groupId])
+
+  const sendMessage =async (e)=>{
+    e.preventDefault();
+    if(input == ""){
+      return alert("Please Enter Your Message");
+    }
+    else{
+    try{
+      const sendData = await addDoc(collection(db , "groups" ,groupId , "messages"), {
+        message : input , 
+        name : "DEEPAK JOSHI",
+        timeStamp : serverTimestamp()
+      });
+    }
+    catch{
+      console.error("Error in sending data" , e);
+    }
+    // data send hone ke baad input phirse khali ho jaye
+    setInput("");
+  }
+  };
   return (
     <div className="chat">
       {/* --------------------------Chat Header -----------------------*/}
@@ -11,8 +56,13 @@ export default function Chat() {
           alt=""
         />
         <div className="chatHeaderInfo">
-          <h3>Room Name</h3>
-          <p>Last seeen at .....</p>
+          <h3>{groupName}</h3>
+          <p>
+            Last seen at{" "}
+            {new Date(
+              messages[messages.length - 1]?.timestamp?.toDate()
+            ).toUTCString()}
+          </p> 
         </div>
         <div className="chatHeaderRight">
           <button style={{ border: "none" }}>
@@ -28,27 +78,22 @@ export default function Chat() {
       </div>
       {/*--------------------- Chat Body---------------------------- */}
       <div className="chatBody">
-        <p className="chatMessage">
-          <span className="chatName">Rahul</span>
-          Hello guys
-          <span className="timestamp">06:46 PM</span>
-        </p>
-        <p className="chatMessage">
-          <span className="chatName">Rahul</span>
-          Hello guys
-          <span className="timestamp">06:46 PM</span>
-        </p>
-        <p className="chatMessage chatReceiver">
-          <span className="chatName">Rakesh</span>
-          Hello guys
-          <span className="timestamp">06:46 PM</span>
-        </p>
+       { messages.map((message)=>(
+          <p className={`chatMessage ${message.name == "DEEPAK JOSHI" && "chatReceiver"
+        }`}>
+          <span className="chatName">{message.name}</span>
+          {message.message}
+          <span className="timestamp"> {new Date(message.timeStamp?.toDate()).toUTCString()}</span>
+        </p> 
+      
+        ))  }
+        
       </div>
       {/* -------------------------chat footer------------------------- */}
       <div className="chatFooter">
         <span className="material-symbols-outlined">mood</span>
-        <form>
-          <input type="text" placeholder="Type a message" />
+        <form onSubmit={(e)=>{sendMessage(e)}}>
+          <input value={input} onChange = {(e)=>{setInput(e.target.value)}} type="text" placeholder="Type a message" />
           <button type="submit" style={{ border: "none" }}>
             <span className="material-symbols-outlined">send</span>
           </button>

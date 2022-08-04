@@ -11,7 +11,7 @@ export default function App() {
       <Sidebar/>
       <Routes>
         <Route path = "/" element = {<Chat/>}></Route>
-        <Route path = "/group/groupID" element = {<Chat/>}></Route>
+        <Route path = "/group/:groupId" element = {<Chat/>}></Route>
       </Routes>
       </div>
     </div>
