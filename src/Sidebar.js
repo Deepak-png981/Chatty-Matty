@@ -5,7 +5,7 @@ import man from './img/man.png'
 import SidebarChat from "./SidebarChat";
 import {db} from './firebase';
 import { collection, doc, getDocs, onSnapshot } from "firebase/firestore"; 
-export default function Sidebar() {
+export default function Sidebar({userName}) {
 
   const[group , setGroup] = useState([]);
 
@@ -30,8 +30,9 @@ export default function Sidebar() {
     <div className='sideBar'>
             {/*--------------------------- Header------------------------- */}
       <div className="sidebarHeader">
-        <div>
+        <div style={{display : "flex"}}>
           <img src={man} alt="" />
+          <h1>{userName}</h1>
         </div>
         <div className="sidebarHeaderRight">
           <button style={{ border: "none" }}>

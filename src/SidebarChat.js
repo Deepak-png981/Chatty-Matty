@@ -1,9 +1,22 @@
-import React from "react";
+import React, {useEffect , useState} from "react";
 import "./SidebarChat.css";
-import { collection, addDoc } from "firebase/firestore"; 
+import { collection,query,orderBy,  onSnapshot, addDoc } from "firebase/firestore"; 
 import {db} from './firebase';
 import {Link} from "react-router-dom";
 export default function SidebarChat({ addNewChat , name , id }) {
+  const [msg, setMsg] = useState("");
+  useEffect(()=>{
+    if(id){
+      const q = query(collection(db , "groups" , id , "messages"), orderBy("timeStamp", "asc"));
+      const getMessages = onSnapshot(q , (snapshoot)=>{
+       
+        snapshoot.docs.forEach((doc)=>{
+          setMsg(doc.data());
+        })
+        
+      });
+    }
+  }, [id])
   // console.log(name , id);
   const createChat = async()=>{
     const group = prompt("Please Enter your GROUP NAME");
@@ -25,7 +38,7 @@ export default function SidebarChat({ addNewChat , name , id }) {
       />
       <div className="sidebarChatInfo">
         <h2>{name}</h2>
-        <p>{id}</p>
+        <p>{msg.message}</p>
       </div>
     </div>
     </Link>

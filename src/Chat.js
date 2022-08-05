@@ -5,7 +5,7 @@ import {useParams} from "react-router-dom";
 import { addDoc, collection, doc, onSnapshot, orderBy, query, serverTimestamp ,Timestamp   } from "firebase/firestore";
 import {db} from "./firebase";
 import { async } from "@firebase/util";
-export default function Chat() {
+export default function Chat({userName}) {
   // catch ker rhe hai ID ko jo uper URL mein pass ho rhi hai
   const {groupId} = useParams(); 
   const [groupName, setGroupName] = useState();
@@ -33,10 +33,11 @@ export default function Chat() {
       return alert("Please Enter Your Message");
     }
     else{
+      // console.log(new Date(messages[messages.length - 1].timeStamp.toDate()).toUTCString());
     try{
       const sendData = await addDoc(collection(db , "groups" ,groupId , "messages"), {
         message : input , 
-        name : "DEEPAK JOSHI",
+        name : userName,
         timeStamp : serverTimestamp()
       });
     }
@@ -45,6 +46,7 @@ export default function Chat() {
     }
     // data send hone ke baad input phirse khali ho jaye
     setInput("");
+    
   }
   };
   return (
@@ -58,10 +60,7 @@ export default function Chat() {
         <div className="chatHeaderInfo">
           <h3>{groupName}</h3>
           <p>
-            Last seen at{" "}
-            {new Date(
-              messages[messages.length - 1]?.timestamp?.toDate()
-            ).toUTCString()}
+            Last seen at{" "}{new Date(messages[messages.length - 1]?.timeStamp?.toDate()).toUTCString()}
           </p> 
         </div>
         <div className="chatHeaderRight">
@@ -79,7 +78,7 @@ export default function Chat() {
       {/*--------------------- Chat Body---------------------------- */}
       <div className="chatBody">
        { messages.map((message)=>(
-          <p className={`chatMessage ${message.name == "DEEPAK JOSHI" && "chatReceiver"
+          <p className={`chatMessage ${message.name == userName && "chatReceiver"
         }`}>
           <span className="chatName">{message.name}</span>
           {message.message}
